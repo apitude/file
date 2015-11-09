@@ -58,7 +58,7 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @var int
-     * @ORM\Column(type="int", length=11)
+     * @ORM\Column(type="integer", length=11)
      * @API\Property\Expose()
      */
     private $size;
