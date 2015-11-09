@@ -1,7 +1,7 @@
 <?php
 namespace Apitude\File;
 
-use Apitude\Core\Application;
+use Silex\Application;
 use Apitude\File\Controller\AbstractFileController;
 use Apitude\File\Services\AwsCredentialsService;
 use Aws\S3\S3Client;
@@ -17,6 +17,11 @@ class FileServiceProvider implements ServiceProviderInterface
         AwsCredentialsService::class,
     ];
 
+    public function __construct()
+    {
+        $this->entityFolders['Apitude\File\Entities'] = realpath(__DIR__.'/Entities');
+    }
+
     public function register(Application $app)
     {
         $adapters = [
@@ -31,7 +36,7 @@ class FileServiceProvider implements ServiceProviderInterface
         $config = $app['config']['files'];
 
         if ($config['filesystem'] === 's3') {
-            $awsCredentialsService = $app->share(function ($app) {
+            $app['aws-credentials.service'] = $app->share(function ($app) {
                 return new AwsCredentialsService($_SERVER);
             });
 
