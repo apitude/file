@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use League\Flysystem\Adapter\AbstractAdapter;
 
-abstract class AbstractFileController extends AbstractCrudController implements LoggerAwareInterface
+class FileController extends AbstractCrudController implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

@@ -3,7 +3,7 @@ namespace Apitude\File;
 
 use Apitude\Core\Provider\AbstractServiceProvider;
 use Silex\Application;
-use Apitude\File\Controller\AbstractFileController;
+use Apitude\File\Controller\FileController;
 use Apitude\File\Services\AwsCredentialsService;
 use Aws\S3\S3Client;
 use League\Flysystem\Adapter\Local;
@@ -14,7 +14,7 @@ use WyriHaximus\SliFly\FlysystemServiceProvider;
 class FileServiceProvider extends AbstractServiceProvider implements ServiceProviderInterface
 {
     protected $services = [
-        AbstractFileController::class,
+        FileController::class,
         AwsCredentialsService::class,
     ];
 
