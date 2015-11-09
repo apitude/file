@@ -11,11 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
  * Class File
  * @package Apitude\File\Entities
  * @ORM\Entity()
- * @ORM\Table(name="file", indexes={@ORM\Index(name="k_path", columns={"path"})})
+ * @ORM\Table(name="files", indexes={@ORM\Index(name="k_path", columns={"path"})})
  *
  * @API\Entity\Expose()
  */
-class AbstractFileEntity extends AbstractEntity implements StampEntityInterface
+class FileEntity extends AbstractEntity implements StampEntityInterface
 {
     use StampEntityTrait;
 
@@ -51,7 +51,7 @@ class AbstractFileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @var string
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=1000)
      * @API\Property\Expose()
      */
     private $path;
