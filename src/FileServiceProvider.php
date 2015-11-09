@@ -1,6 +1,7 @@
 <?php
 namespace Apitude\File;
 
+use Apitude\Core\Provider\AbstractServiceProvider;
 use Silex\Application;
 use Apitude\File\Controller\AbstractFileController;
 use Apitude\File\Services\AwsCredentialsService;
@@ -10,7 +11,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use Silex\ServiceProviderInterface;
 use WyriHaximus\SliFly\FlysystemServiceProvider;
 
-class FileServiceProvider implements ServiceProviderInterface
+class FileServiceProvider extends AbstractServiceProvider implements ServiceProviderInterface
 {
     protected $services = [
         AbstractFileController::class,
@@ -24,6 +25,8 @@ class FileServiceProvider implements ServiceProviderInterface
 
     public function register(Application $app)
     {
+        parent::register($app);
+
         $adapters = [
             'local__DIR__' => [
                 'adapter' => Local::class,

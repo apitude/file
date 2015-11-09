@@ -2,7 +2,7 @@
 namespace Apitude\File\Controller;
 
 use Apitude\Core\API\Controller\AbstractCrudController;
-use Apitude\File\Entities\AbstractFileEntity;
+use Apitude\File\Entities\FileEntity;
 use League\Flysystem\Config;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -70,7 +70,7 @@ abstract class AbstractFileController extends AbstractCrudController implements 
         return $request->get('download') ? true : false;
     }
 
-    public function get(Request $request, AbstractFileEntity $fileEntity)
+    public function get(Request $request, FileEntity $fileEntity)
     {
         if (!$fileEntity) {
             return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
@@ -95,8 +95,8 @@ abstract class AbstractFileController extends AbstractCrudController implements 
     }
 
     /**
-     * @param Request            $request
-     * @param AbstractFileEntity $fileEntity
+     * @param Request    $request
+     * @param FileEntity $fileEntity
      *
      * @return bool|\Symfony\Component\HttpFoundation\Response
      */
