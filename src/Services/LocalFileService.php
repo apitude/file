@@ -5,6 +5,6 @@ class LocalFileService extends AbstractFileService
 {
     protected function getFileAdapter()
     {
-        return $this->container['flysystems']['local__DIR'];
+        return $this->container['flysystems']['local__DIR__'];
     }
 }
