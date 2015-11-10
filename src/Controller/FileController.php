@@ -3,7 +3,7 @@ namespace Apitude\File\Controller;
 
 use Apitude\Core\API\Controller\AbstractCrudController;
 use Apitude\File\Entities\FileEntity;
-use League\Flysystem\Config;
+use Apitude\File\Services\LocalFileService;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use League\Flysystem\Adapter\AbstractAdapter;
 
 class FileController extends AbstractCrudController implements LoggerAwareInterface
 {
@@ -45,6 +44,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
             // check file restrictions
             /** @var UploadedFile $uploadedFile */
             $uploadedFile = $request->files->getIterator()->current();
+
             if ($this->fileSizeRestriction && $this->fileSizeRestriction < $uploadedFile->getSize()) {
                 return new JsonResponse(self::ERROR_FILE_SIZE_EXCEEDED, Response::HTTP_BAD_REQUEST);
             }
@@ -53,7 +53,8 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
                 return new JsonResponse(self::ERROR_FILE_TYPE_NOT_ALLOWED, Response::HTTP_BAD_REQUEST);
             }
 
-            $file = $this->getFileService()->write($uploadedFile->getFilename(), $uploadedFile, new Config());
+            $file = $this->getLocalFileService()->write($uploadedFile);
+
         } catch (FileException $e) {
             $this->logger->error($e->getMessage(), ['files' => $request->files->all()]);
 
@@ -89,7 +90,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
             'Content-Length'      => intval($fileEntity->getSize()),
         ];
 
-        $stream = $this->getFileService()->readStream($fileEntity->getPath());
+        $stream = $this->getLocalFileService()->read($fileEntity);
 
         return new StreamedResponse($stream, 200, $headers);
     }
@@ -106,14 +107,14 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
             return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->getFileService()->delete($fileEntity->getPath());
+        return $this->getLocalFileService()->delete($fileEntity->getPath());
     }
 
     /**
-     * @return AbstractAdapter
+     * @return LocalFileService
      */
-    private function getFileService()
+    protected function getLocalFileService()
     {
-        return $this->container['file.service'];
+        return $this->container[LocalFileService::class];
     }
 }

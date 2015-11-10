@@ -1,13 +1,10 @@
 <?php
 namespace Apitude\File\Services;
 
-use Apitude\Core\Provider\ContainerAwareInterface;
-use Apitude\Core\Provider\ContainerAwareTrait;
+use Silex\Application;
 
-class AwsCredentialsService implements ContainerAwareInterface
+class AwsCredentialsService
 {
-    use ContainerAwareTrait;
-
     protected $credentialVariables = array(
         'AWS_ACCESS_KEY_ID',
         'AWS_SECRET_ACCESS_KEY',
@@ -18,22 +15,22 @@ class AwsCredentialsService implements ContainerAwareInterface
         'AWS_MASTER_KEY_REGION',
     );
 
-    public function checkKmsCredentials()
+    public function checkKmsCredentials(Application $app)
     {
         $variables = array_merge($this->kmsVariables, $this->credentialVariables);
-        return $this->checkCredentials($variables);
+        return $this->checkCredentials($variables, $app);
     }
 
-    public function checkS3Credentials()
+    public function checkS3Credentials(Application $app)
     {
-        return $this->checkCredentials($this->credentialVariables);
+        return $this->checkCredentials($this->credentialVariables, $app);
     }
 
-    protected function checkCredentials($credentialVariables)
+    protected function checkCredentials($credentialVariables, Application $app)
     {
         $missing = false;
         for ($i = 0; $i < count($credentialVariables); $i++) {
-            if (! isset($this->container['config'][$credentialVariables[$i]])) {
+            if (! isset($app['config']['files']['credentials'][$credentialVariables[$i]])) {
                 $missing = true;
             }
         }
