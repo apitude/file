@@ -73,6 +73,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
 
     public function get(Request $request, FileEntity $fileEntity)
     {
+        // TODO Add validation for get request
         if (!$fileEntity) {
             return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
@@ -103,6 +104,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
      */
     public function delete(Request $request, $fileEntity)
     {
+        // TODO add validation for delete request
         if (!$fileEntity) {
             return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
