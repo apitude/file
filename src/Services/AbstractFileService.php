@@ -5,8 +5,7 @@ use Apitude\Core\Provider\ContainerAwareInterface;
 use Apitude\Core\Provider\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use League\Flysystem\Adapter\AbstractAdapter;
-use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
 
 abstract class AbstractFileService implements ContainerAwareInterface
 {
@@ -32,9 +31,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
 
         $fs = fopen($file->getPathname(), 'r');
 
-        $config = new Config($this->settings);
-
-        return $this->getFileAdapter()->writeStream($fileName, $fs, $config);
+        return $this->getFilesystem()->writeStream($fileName, $fs, $this->settings);
     }
 
     /**
@@ -45,7 +42,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
      */
     public function read(File $file)
     {
-        return $this->getFileAdapter()->readStream($file->getPath());
+        return $this->getFilesystem()->readStream($file->getPath());
     }
 
     /**
@@ -56,11 +53,11 @@ abstract class AbstractFileService implements ContainerAwareInterface
      */
     public function delete(File $file)
     {
-        return $this->getFileAdapter()->delete($file->getPath());
+        return $this->getFilesystem()->delete($file->getPath());
     }
 
     /**
-     * @return AbstractAdapter
+     * @return Filesystem
      */
-    abstract protected function getFileAdapter();
+    abstract protected function getFilesystem();
 }
