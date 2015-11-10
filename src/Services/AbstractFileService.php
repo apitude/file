@@ -6,16 +6,23 @@ use Apitude\Core\Provider\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use League\Flysystem\Adapter\AbstractAdapter;
+use League\Flysystem\Config;
 
 abstract class AbstractFileService implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
     /**
+     * @var array
+     */
+    protected $settings = [];
+
+    /**
      * Writes to the filesystem
      *
      * @param UploadedFile $file
      * @param string       $fileName
+     * @return array|false
      */
     public function write(UploadedFile $file, $fileName = null)
     {
@@ -25,9 +32,9 @@ abstract class AbstractFileService implements ContainerAwareInterface
 
         $fs = fopen($file->getPathname(), 'r');
 
-        $config = [];
+        $config = new Config($this->settings);
 
-        $this->getFileAdapter()->write($fileName, $fs, $config);
+        return $this->getFileAdapter()->writeStream($fileName, $fs, $config);
     }
 
     /**
