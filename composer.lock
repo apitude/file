@@ -581,12 +581,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/silexphp/Silex.git",
-                "reference": "b51769c17be3a369abc4fa8c8b27646a296dfdb3"
+                "reference": "b6dec5d69f5ac4e1ddb868e7a80e2cfe2f8b4b54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silexphp/Silex/zipball/b51769c17be3a369abc4fa8c8b27646a296dfdb3",
-                "reference": "b51769c17be3a369abc4fa8c8b27646a296dfdb3",
+                "url": "https://api.github.com/repos/silexphp/Silex/zipball/b6dec5d69f5ac4e1ddb868e7a80e2cfe2f8b4b54",
+                "reference": "b6dec5d69f5ac4e1ddb868e7a80e2cfe2f8b4b54",
                 "shasum": ""
             },
             "require": {
@@ -650,7 +650,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2015-11-04 01:16:14"
+            "time": "2015-11-10 12:43:31"
         },
         {
             "name": "symfony/debug",
@@ -711,27 +711,27 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "2.8.x-dev",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "a5eb815363c0388e83247e7e9853e5dbc14999cc"
+                "reference": "d36355e026905fa5229e1ed7b4e9eda2e67adfcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/a5eb815363c0388e83247e7e9853e5dbc14999cc",
-                "reference": "a5eb815363c0388e83247e7e9853e5dbc14999cc",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/d36355e026905fa5229e1ed7b4e9eda2e67adfcf",
+                "reference": "d36355e026905fa5229e1ed7b4e9eda2e67adfcf",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9"
+                "php": ">=5.5.9"
             },
             "require-dev": {
                 "psr/log": "~1.0",
-                "symfony/config": "~2.0,>=2.0.5|~3.0.0",
-                "symfony/dependency-injection": "~2.6|~3.0.0",
-                "symfony/expression-language": "~2.6|~3.0.0",
-                "symfony/stopwatch": "~2.3|~3.0.0"
+                "symfony/config": "~2.8|~3.0",
+                "symfony/dependency-injection": "~2.8|~3.0",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/stopwatch": "~2.8|~3.0"
             },
             "suggest": {
                 "symfony/dependency-injection": "",
@@ -740,7 +740,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -767,7 +767,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2015-10-30 20:15:42"
+            "time": "2015-10-30 23:35:59"
         },
         {
             "name": "symfony/http-foundation",
@@ -824,44 +824,44 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "2.7.x-dev",
+            "version": "2.8.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "cd4550722340132bbee1cc0e27aa7651f66c49fd"
+                "reference": "331202dce64ff890c64473350320d5f0e14d6c3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/469d250b5f1021cb02d13c344f6318eeab2722a0",
-                "reference": "cd4550722340132bbee1cc0e27aa7651f66c49fd",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/331202dce64ff890c64473350320d5f0e14d6c3f",
+                "reference": "331202dce64ff890c64473350320d5f0e14d6c3f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9",
                 "psr/log": "~1.0",
                 "symfony/debug": "~2.6,>=2.6.2",
-                "symfony/event-dispatcher": "~2.6,>=2.6.7",
-                "symfony/http-foundation": "~2.5,>=2.5.4"
+                "symfony/event-dispatcher": "~2.6,>=2.6.7|~3.0.0",
+                "symfony/http-foundation": "~2.5,>=2.5.4|~3.0.0"
             },
             "conflict": {
                 "symfony/config": "<2.7"
             },
             "require-dev": {
-                "symfony/browser-kit": "~2.3",
-                "symfony/class-loader": "~2.1",
-                "symfony/config": "~2.7",
-                "symfony/console": "~2.3",
-                "symfony/css-selector": "~2.0,>=2.0.5",
-                "symfony/dependency-injection": "~2.2",
-                "symfony/dom-crawler": "~2.0,>=2.0.5",
-                "symfony/expression-language": "~2.4",
-                "symfony/finder": "~2.0,>=2.0.5",
-                "symfony/process": "~2.0,>=2.0.5",
-                "symfony/routing": "~2.2",
-                "symfony/stopwatch": "~2.3",
-                "symfony/templating": "~2.2",
-                "symfony/translation": "~2.0,>=2.0.5",
-                "symfony/var-dumper": "~2.6"
+                "symfony/browser-kit": "~2.3|~3.0.0",
+                "symfony/class-loader": "~2.1|~3.0.0",
+                "symfony/config": "~2.8",
+                "symfony/console": "~2.3|~3.0.0",
+                "symfony/css-selector": "~2.0,>=2.0.5|~3.0.0",
+                "symfony/dependency-injection": "~2.8|~3.0.0",
+                "symfony/dom-crawler": "~2.0,>=2.0.5|~3.0.0",
+                "symfony/expression-language": "~2.4|~3.0.0",
+                "symfony/finder": "~2.0,>=2.0.5|~3.0.0",
+                "symfony/process": "~2.0,>=2.0.5|~3.0.0",
+                "symfony/routing": "~2.8|~3.0.0",
+                "symfony/stopwatch": "~2.3|~3.0.0",
+                "symfony/templating": "~2.2|~3.0.0",
+                "symfony/translation": "~2.0,>=2.0.5|~3.0.0",
+                "symfony/var-dumper": "~2.6|~3.0.0"
             },
             "suggest": {
                 "symfony/browser-kit": "",
@@ -875,7 +875,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -902,7 +902,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2015-11-04 09:24:24"
+            "time": "2015-11-09 12:46:59"
         },
         {
             "name": "symfony/polyfill-php54",
@@ -968,12 +968,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
-                "reference": "f18b924e9fb82b69124b5fd7da690868bb37959b"
+                "reference": "26c3f4784cd99c67fc8693a748f45c847c8c23ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/routing/zipball/b514a54538b406776d503855f63bf6ebbabd5e8b",
-                "reference": "f18b924e9fb82b69124b5fd7da690868bb37959b",
+                "url": "https://api.github.com/repos/symfony/routing/zipball/26c3f4784cd99c67fc8693a748f45c847c8c23ab",
+                "reference": "26c3f4784cd99c67fc8693a748f45c847c8c23ab",
                 "shasum": ""
             },
             "require": {
@@ -1034,7 +1034,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2015-10-30 23:35:59"
+            "time": "2015-11-10 10:42:06"
         },
         {
             "name": "wyrihaximus/pimple-flysystem-service",
@@ -1145,12 +1145,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apitude/apitude.git",
-                "reference": "f6c64db18ea2acae8d67124b5af0873731cae3c6"
+                "reference": "50ab4d0feb3f1a966f02df51a0fa183d7cdf8ca7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apitude/apitude/zipball/f6c64db18ea2acae8d67124b5af0873731cae3c6",
-                "reference": "f6c64db18ea2acae8d67124b5af0873731cae3c6",
+                "url": "https://api.github.com/repos/apitude/apitude/zipball/50ab4d0feb3f1a966f02df51a0fa183d7cdf8ca7",
+                "reference": "50ab4d0feb3f1a966f02df51a0fa183d7cdf8ca7",
                 "shasum": ""
             },
             "require": {
@@ -1171,9 +1171,9 @@
                 "phpunit/phpunit": "~4"
             },
             "bin": [
-                "apiworker",
-                "apicon",
-                "apidb"
+                "bin/apiworker",
+                "bin/apicon",
+                "bin/apidb"
             ],
             "type": "library",
             "autoload": {
@@ -1195,7 +1195,7 @@
                 "source": "https://github.com/apitude/apitude/tree/master",
                 "issues": "https://github.com/apitude/apitude/issues"
             },
-            "time": "2015-11-04 20:11:39"
+            "time": "2015-11-10 18:32:32"
         },
         {
             "name": "asm89/stack-cors",
