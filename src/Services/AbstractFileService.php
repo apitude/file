@@ -23,7 +23,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
      *
      * @param UploadedFile $file
      * @param string       $recordType
-     * @return array|false
+     * @return bool
      */
     public function write(UploadedFile $file, $recordType = '')
     {
@@ -52,6 +52,8 @@ abstract class AbstractFileService implements ContainerAwareInterface
             $em->persist($entity);
             $em->flush();
         }
+
+        return $results;
     }
 
     /**
