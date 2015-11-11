@@ -35,7 +35,7 @@ trait FileAwareTrait
      * @return UploadedFile
      * @throws FileException
      */
-    protected function validateFileRequest(Request $request)
+    public function validateFileRequest(Request $request)
     {
         if ($request->files->count() != 1) {
             throw new FileException('No file uploaded', Response::HTTP_BAD_REQUEST);
