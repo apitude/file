@@ -42,6 +42,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
             $entity = new FileEntity();
 
             $entity->setFileName($fileName)
+                ->setRecordType($recordType)
                 ->setContentType($file->getMimeType())
                 ->setFilesystem($this->getFilesystemType())
                 ->setPath($path)
