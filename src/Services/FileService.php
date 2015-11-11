@@ -35,7 +35,7 @@ class FileService implements ContainerAwareInterface
         $filesConfig = $this->container['config']['files'];
 
         $path = isset($filesConfig['record_types'][$recordType]['path']) ?
-            $filesConfig[$recordType]['path'] :
+            $filesConfig['record_types'][$recordType]['path'] :
             self::DEFAULT_PATH;
 
         $filesystem = isset($filesConfig['record_types'][$recordType]['filesystem']) ?
