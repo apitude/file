@@ -9,9 +9,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\EntityManager;
 use League\Flysystem\Filesystem;
 
-abstract class AbstractFileService implements ContainerAwareInterface
+abstract class FileService implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
+    const DEFAULT_FILESYSTEM = 'local__DIR__';
+    const DEFAULT_RECORDTYPE = 'file';
 
     /**
      * @var array
@@ -22,16 +25,26 @@ abstract class AbstractFileService implements ContainerAwareInterface
      * Writes to the filesystem and creates a FileEntity
      *
      * @param UploadedFile $file
-     * @param string $path
      * @param string $recordType
      * @return FileEntity
      * @throws FileException
      */
-    public function writeAndCreateEntity(UploadedFile $file, $path = 'files', $recordType = 'file')
+    public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
     {
-        $fileName = uniqid() . '.' . $file->guessExtension();
+        if (! isset($this->container['config']['files'][$recordType]['path']) ||
+            ! isset($this->container['config']['files'][$recordType]['filesystem'])) {
+            throw new FileException('Missing record_type config for:  ' . $recordType);
+        }
 
-        $results = $this->write($file, $path, $fileName);
+        $path       = $this->container['config']['files'][$recordType]['path'];
+        $fileName   = uniqid() . '.' . $file->guessExtension();
+        $fullPath   = $path . DIRECTORY_SEPARATOR . $fileName;
+        $filesystem = $this->getFilesystem($this->container['config']['files'][$recordType]['filesystem']);
+
+        $results = $this->getFilesystem($filesystem)->writeStream(
+            $fullPath,
+            fopen($file->getPathname(), 'r'),
+            $this->settings);
 
         // If the write was unsuccessful, throw an exception
         if ($results === false) {
@@ -46,7 +59,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
         $entity->setFileName($fileName)
             ->setRecordType($recordType)
             ->setContentType($file->getMimeType())
-            ->setFilesystem($this->getFilesystemType())
+            ->setFilesystem($filesystem)
             ->setPath($path)
             ->setFileName($fileName)
             ->setSize($file->getSize());
@@ -58,37 +71,11 @@ abstract class AbstractFileService implements ContainerAwareInterface
     }
 
     /**
-     * Writes to the filesystem
-     *
-     * @param UploadedFile $file
-     * @param string       $path
-     * @param string       $fileName
-     * @return array|false
-     */
-    public function write(UploadedFile $file, $path = 'file', $fileName = null)
-    {
-        $fs = fopen($file->getPathname(), 'r');
-
-        if ($fileName === null) {
-            $fileName = uniqid() . '.' . $file->guessExtension();
-        }
-
-        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
-
-        return $this->getFilesystem()->writeStream($fullPath, $fs, $this->settings);
-    }
-
-    /**
+     * @param string $type
      * @return Filesystem
      */
-    protected function getFilesystem()
+    protected function getFilesystem($type = self::DEFAULT_FILESYSTEM)
     {
-        return $this->container['flysystems'][$this->getFilesystemType()];
+        return $this->container['flysystems'][$type];
     }
-
-    /**
-     * Implement this by simply returning a string containing the name of the filesystem, e.g. s3
-     * @return string
-     */
-    abstract protected function getFilesystemType();
 }
