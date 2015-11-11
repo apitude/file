@@ -45,10 +45,6 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
         try {
             $uploadedFile = $this->validateFileRequest($request);
 
-            if ($uploadedFile instanceof JsonResponse) {
-                return $uploadedFile;
-            }
-
             $file = $this->getLocalFileService()->writeAndCreateEntity($uploadedFile);
 
             return new JsonResponse($this->getApiWriter()->writeObject($file), Response::HTTP_CREATED);
@@ -65,12 +61,13 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
      * Returns true if valid, returns a JsonResponse if invalid
      *
      * @param Request $request
-     * @return UploadedFile|JsonResponse
+     * @return UploadedFile
+     * @throws FileException
      */
     public function validateFileRequest(Request $request)
     {
         if ($request->files->count() != 1) {
-            return new JsonResponse(self::ERROR_NO_FILE_UPLOADED, Response::HTTP_BAD_REQUEST);
+            throw new FileException(self::ERROR_NO_FILE_UPLOADED, Response::HTTP_BAD_REQUEST);
         }
 
         // check file restrictions
@@ -78,11 +75,11 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
         $file = $request->files->getIterator()->current();
 
         if ($this->fileSizeRestriction && $this->fileSizeRestriction < $file->getSize()) {
-            return new JsonResponse(self::ERROR_FILE_SIZE_EXCEEDED, Response::HTTP_BAD_REQUEST);
+            throw new FileException(self::ERROR_FILE_SIZE_EXCEEDED, Response::HTTP_BAD_REQUEST);
         }
         if (!empty($this->fileTypeRestrictions)
             && !in_array($file->getMimeType(), $this->fileTypeRestrictions)) {
-            return new JsonResponse(self::ERROR_FILE_TYPE_NOT_ALLOWED, Response::HTTP_BAD_REQUEST);
+            throw new FileException(self::ERROR_FILE_TYPE_NOT_ALLOWED, Response::HTTP_BAD_REQUEST);
         }
 
         return $file;
