@@ -3,8 +3,10 @@ namespace Apitude\File\Services;
 
 use Apitude\Core\Provider\ContainerAwareInterface;
 use Apitude\Core\Provider\ContainerAwareTrait;
+use Apitude\File\Entities\FileEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Doctrine\ORM\EntityManager;
 use League\Flysystem\Filesystem;
 
 abstract class AbstractFileService implements ContainerAwareInterface
@@ -20,18 +22,35 @@ abstract class AbstractFileService implements ContainerAwareInterface
      * Writes to the filesystem
      *
      * @param UploadedFile $file
-     * @param string       $fileName
+     * @param string       $recordType
      * @return array|false
      */
-    public function write(UploadedFile $file, $fileName = null)
+    public function write(UploadedFile $file, $recordType = '')
     {
-        if ($fileName === null) {
-            $fileName = $file->getClientOriginalName();
-        }
-
         $fs = fopen($file->getPathname(), 'r');
 
-        return $this->getFilesystem()->writeStream($fileName, $fs, $this->settings);
+        $fileName = uniqid();
+        $path     = $recordType . '/' . $fileName;
+
+        $results = $this->getFilesystem()->writeStream($path, $fs, $this->settings);
+
+        // If the write was successful, add it as an entity
+        if ($results === true) {
+            /** @var EntityManager $em */
+            $em = $this->container['orm.em'];
+
+            $entity = new FileEntity();
+
+            $entity->setFileName($fileName)
+                ->setContentType($file->getMimeType())
+                ->setFilesystem($this->getFilesystemType())
+                ->setPath($path)
+                ->setFileName($fileName)
+                ->setSize($file->getSize());
+
+            $em->persist($entity);
+            $em->flush();
+        }
     }
 
     /**
@@ -59,5 +78,14 @@ abstract class AbstractFileService implements ContainerAwareInterface
     /**
      * @return Filesystem
      */
-    abstract protected function getFilesystem();
+    protected function getFilesystem()
+    {
+        return $this->container['flysystems'][$this->getFilesystemType()];
+    }
+
+    /**
+     * Implement this by simply returning a string containing the name of the filesystem, e.g. s3
+     * @return string
+     */
+    abstract protected function getFilesystemType();
 }

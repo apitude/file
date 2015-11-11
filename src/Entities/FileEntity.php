@@ -33,6 +33,13 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
      * @ORM\Column(type="string", length=128)
      * @API\Property\Expose()
      */
+    private $filesystem;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=128)
+     * @API\Property\Expose()
+     */
     private $record_type;
 
     /**
@@ -81,7 +88,7 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @param $record_type
-     * @return AbstractFileEntity
+     * @return FileEntity
      */
     public function setRecordType($record_type)
     {
@@ -99,7 +106,7 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @param string $file_name
-     * @return AbstractFileEntity
+     * @return FileEntity
      */
     public function setFileName($file_name)
     {
@@ -117,7 +124,7 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @param string $content_type
-     * @return AbstractFileEntity
+     * @return FileEntity
      */
     public function setContentType($content_type)
     {
@@ -135,7 +142,7 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @param string $path
-     * @return AbstractFileEntity
+     * @return FileEntity
      */
     public function setPath($path)
     {
@@ -153,11 +160,29 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @param int $size
-     * @return AbstractFileEntity
+     * @return FileEntity
      */
     public function setSize($size)
     {
         $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
+    /**
+     * @param string $filesystem
+     * @return FileEntity
+     */
+    public function setFilesystem($filesystem)
+    {
+        $this->filesystem = $filesystem;
         return $this;
     }
 }

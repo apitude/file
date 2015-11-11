@@ -3,8 +3,10 @@ namespace Apitude\File\Services;
 
 class LocalFileService extends AbstractFileService
 {
-    protected function getFilesystem()
+    const FILESYSTEM_TYPE = 'local__DIR__';
+
+    protected function getFilesystemType()
     {
-        return $this->container['flysystems']['local__DIR__'];
+        return self::FILESYSTEM_TYPE;
     }
 }

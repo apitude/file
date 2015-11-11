@@ -3,8 +3,10 @@ namespace Apitude\File\Services;
 
 class S3FileService extends AbstractFileService
 {
-    protected function getFilesystem()
+    const FILESYSTEM_TYPE = 's3';
+
+    protected function getFilesystemType()
     {
-        return $this->container['flysystems']['s3'];
+        return self::FILESYSTEM_TYPE;
     }
 }
