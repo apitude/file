@@ -24,7 +24,8 @@ abstract class AbstractFileService implements ContainerAwareInterface
      * @param UploadedFile $file
      * @param string $path
      * @param string $recordType
-     * @return FileEntity|false
+     * @return FileEntity
+     * @throws FileException
      */
     public function writeAndCreateEntity(UploadedFile $file, $path = 'files', $recordType = 'file')
     {

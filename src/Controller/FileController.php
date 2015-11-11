@@ -43,7 +43,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
     public function post(Request $request)
     {
         try {
-            $uploadedFile = $this->validateFile($request);
+            $uploadedFile = $this->validateFileRequest($request);
 
             if ($uploadedFile instanceof JsonResponse) {
                 return $uploadedFile;
@@ -67,7 +67,7 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
      * @param Request $request
      * @return UploadedFile|JsonResponse
      */
-    protected function validateFile(Request $request)
+    public function validateFileRequest(Request $request)
     {
         if ($request->files->count() != 1) {
             return new JsonResponse(self::ERROR_NO_FILE_UPLOADED, Response::HTTP_BAD_REQUEST);
