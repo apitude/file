@@ -9,12 +9,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\EntityManager;
 use League\Flysystem\Filesystem;
 
-abstract class FileService implements ContainerAwareInterface
+class FileService implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    const DEFAULT_FILESYSTEM = 'local__DIR__';
     const DEFAULT_RECORDTYPE = 'file';
+    const DEFAULT_FILESYSTEM = 'local__DIR__';
+    const DEFAULT_PATH       = 'files';
 
     /**
      * @var array
@@ -31,15 +32,16 @@ abstract class FileService implements ContainerAwareInterface
      */
     public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
     {
-        if (! isset($this->container['config']['files'][$recordType]['path']) ||
-            ! isset($this->container['config']['files'][$recordType]['filesystem'])) {
-            throw new FileException('Missing record_type config for:  ' . $recordType);
-        }
+        $path = isset($this->container['config']['files'][$recordType]['path']) ?
+            $this->container['config']['files'][$recordType]['path'] :
+            self::DEFAULT_PATH;
 
-        $path       = $this->container['config']['files'][$recordType]['path'];
-        $fileName   = uniqid() . '.' . $file->guessExtension();
-        $fullPath   = $path . DIRECTORY_SEPARATOR . $fileName;
-        $filesystem = $this->getFilesystem($this->container['config']['files'][$recordType]['filesystem']);
+        $filesystem = isset($this->container['config']['files'][$recordType]['filesystem']) ?
+            $this->getFilesystem($this->container['config']['files'][$recordType]['filesystem']) :
+            $this->getFilesystem(self::DEFAULT_FILESYSTEM);
+
+        $fileName = uniqid() . '.' . $file->guessExtension();
+        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
 
         $results = $this->getFilesystem($filesystem)->writeStream(
             $fullPath,
@@ -74,7 +76,7 @@ abstract class FileService implements ContainerAwareInterface
      * @param string $type
      * @return Filesystem
      */
-    protected function getFilesystem($type = self::DEFAULT_FILESYSTEM)
+    protected function getFilesystem($type)
     {
         return $this->container['flysystems'][$type];
     }

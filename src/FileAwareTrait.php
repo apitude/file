@@ -45,9 +45,18 @@ trait FileAwareTrait
         /** @var UploadedFile $uploadedFile */
         $file = $request->files->getIterator()->current();
 
+        // Set size and file type restrictions from config
+        if (isset($this->container['config']['files'][$recordType]['maxsize'])) {
+            $this->fileSizeRestriction = $this->container['config']['files'][$recordType]['maxsize'];
+        }
+        if (isset($this->container['config']['files'][$recordType]['types'])) {
+            $this->$fileTypeRestrictions = $this->container['config']['files'][$recordType]['types'];
+        }
+
         if ($this->fileSizeRestriction && $this->fileSizeRestriction < $file->getSize()) {
             throw new FileException('File size exceeded', Response::HTTP_BAD_REQUEST);
         }
+
         if (!empty($this->fileTypeRestrictions)
             && !in_array($file->getMimeType(), $this->fileTypeRestrictions)) {
             throw new FileException('File type not allowed', Response::HTTP_BAD_REQUEST);
