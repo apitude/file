@@ -19,6 +19,8 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
     const ERROR_FILE_SIZE_EXCEEDED    = 'File size exceeded';
     const ERROR_FILE_TYPE_NOT_ALLOWED = 'File type not allowed';
 
+    protected $apiRecordType = 'Apitude.File.Entities.FileEntity';
+
     /**
      * File size limitation for upload
      * Zero = unlimited

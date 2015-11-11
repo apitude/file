@@ -22,21 +22,20 @@ abstract class AbstractFileService implements ContainerAwareInterface
      * Writes to the filesystem and creates a FileEntity
      *
      * @param UploadedFile $file
+     * @param string $path
      * @param string $recordType
      * @return FileEntity|false
      */
-    public function writeAndCreateEntity(UploadedFile $file, $recordType = 'file')
+    public function writeAndCreateEntity(UploadedFile $file, $path = 'files', $recordType = 'file')
     {
-        $fileName = uniqid();
+        $fileName = uniqid() . $file->guessExtension();
 
-        $results = $this->write($file, $recordType, $fileName);
+        $results = $this->write($file, $path, $fileName);
 
         // If the write was unsuccessful, throw an exception
         if ($results === false) {
             throw new FileException('Unable to create file.');
         }
-
-        $path = $recordType . '/' . $fileName;
 
         /** @var EntityManager $em */
         $em = $this->container['orm.em'];
@@ -61,21 +60,21 @@ abstract class AbstractFileService implements ContainerAwareInterface
      * Writes to the filesystem
      *
      * @param UploadedFile $file
-     * @param string       $recordType
+     * @param string       $path
      * @param string       $fileName
      * @return array|false
      */
-    public function write(UploadedFile $file, $recordType = 'file', $fileName = null)
+    public function write(UploadedFile $file, $path = 'file', $fileName = null)
     {
         $fs = fopen($file->getPathname(), 'r');
 
         if ($fileName === null) {
-            $fileName = uniqid();
+            $fileName = uniqid() . $file->guessExtension();
         }
 
-        $path = $recordType . '/' . $fileName;
+        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
 
-        return $this->getFilesystem()->writeStream($path, $fs, $this->settings);
+        return $this->getFilesystem()->writeStream($fullPath, $fs, $this->settings);
     }
 
     /**

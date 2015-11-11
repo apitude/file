@@ -37,24 +37,24 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(name="record_type", type="string", length=128)
      * @API\Property\Expose()
      */
-    private $record_type;
+    private $recordType;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(name="file_name", type="string", length=128)
      * @API\Property\Expose()
      */
-    private $file_name;
+    private $fileName;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(name="content_type", type="string", length=128)
      * @API\Property\Expose()
      */
-    private $content_type;
+    private $contentType;
 
     /**
      * @var string
@@ -83,16 +83,16 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
      */
     public function getRecordType()
     {
-        return $this->record_type;
+        return $this->recordType;
     }
 
     /**
-     * @param $record_type
+     * @param $recordType
      * @return FileEntity
      */
-    public function setRecordType($record_type)
+    public function setRecordType($recordType)
     {
-        $this->record_type = $record_type;
+        $this->recordType = $recordType;
         return $this;
     }
 
@@ -101,16 +101,16 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
      */
     public function getFileName()
     {
-        return $this->file_name;
+        return $this->fileName;
     }
 
     /**
-     * @param string $file_name
+     * @param string $fileName
      * @return FileEntity
      */
-    public function setFileName($file_name)
+    public function setFileName($fileName)
     {
-        $this->file_name = $file_name;
+        $this->fileName = $fileName;
         return $this;
     }
 
@@ -119,16 +119,16 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
      */
     public function getContentType()
     {
-        return $this->content_type;
+        return $this->contentType;
     }
 
     /**
-     * @param string $content_type
+     * @param string $contentType
      * @return FileEntity
      */
-    public function setContentType($content_type)
+    public function setContentType($contentType)
     {
-        $this->content_type = $content_type;
+        $this->contentType = $contentType;
         return $this;
     }
 
