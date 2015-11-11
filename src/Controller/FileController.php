@@ -2,7 +2,6 @@
 namespace Apitude\File\Controller;
 
 use Apitude\Core\API\Controller\AbstractCrudController;
-use Apitude\File\Entities\FileEntity;
 use Apitude\File\Services\LocalFileService;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -11,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileController extends AbstractCrudController implements LoggerAwareInterface
 {
@@ -34,82 +32,58 @@ class FileController extends AbstractCrudController implements LoggerAwareInterf
      */
     protected $fileTypeRestrictions = [];
 
+    /**
+     * Validate the file in the request, write it to the filesystem, and create an entity
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function post(Request $request)
     {
         try {
-            if ($request->files->count() != 1) {
-                return new JsonResponse(self::ERROR_NO_FILE_UPLOADED, Response::HTTP_BAD_REQUEST);
+            $uploadedFile = $this->validateFile($request);
+
+            if ($uploadedFile instanceof JsonResponse) {
+                return $uploadedFile;
             }
 
-            // check file restrictions
-            /** @var UploadedFile $uploadedFile */
-            $uploadedFile = $request->files->getIterator()->current();
+            $file = $this->getLocalFileService()->writeAndCreateEntity($uploadedFile);
 
-            if ($this->fileSizeRestriction && $this->fileSizeRestriction < $uploadedFile->getSize()) {
-                return new JsonResponse(self::ERROR_FILE_SIZE_EXCEEDED, Response::HTTP_BAD_REQUEST);
-            }
-            if (!empty($this->fileTypeRestrictions)
-                && !in_array($uploadedFile->getMimeType(), $this->fileTypeRestrictions)) {
-                return new JsonResponse(self::ERROR_FILE_TYPE_NOT_ALLOWED, Response::HTTP_BAD_REQUEST);
-            }
-
-            $file = $this->getLocalFileService()->write($uploadedFile);
+            return new JsonResponse($this->getApiWriter()->writeObject($file), Response::HTTP_CREATED);
 
         } catch (FileException $e) {
             $this->logger->error($e->getMessage(), ['files' => $request->files->all()]);
 
             return new JsonResponse($e->getMessage(), $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $response = new JsonResponse($file, Response::HTTP_CREATED);
-
-        return $response;
-    }
-
-    protected function isRequestForDownload(Request $request)
-    {
-        return $request->get('download') ? true : false;
-    }
-
-    public function get(Request $request, FileEntity $fileEntity)
-    {
-        // TODO Add validation for get request
-        if (!$fileEntity) {
-            return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($this->isRequestForDownload($request)) {
-            $disposition = 'attachment';
-        } else {
-            $disposition = 'inline';
-        }
-        $fileName = $fileEntity->getFileName();
-
-        $headers = [
-            'Content-Type'        => $fileEntity->getContentType(),
-            'Content-Disposition' => "{$disposition}; filename={$fileName}",
-            'Content-Length'      => intval($fileEntity->getSize()),
-        ];
-
-        $stream = $this->getLocalFileService()->read($fileEntity);
-
-        return new StreamedResponse($stream, 200, $headers);
     }
 
     /**
-     * @param Request    $request
-     * @param FileEntity $fileEntity
+     * Validates the file in the request according to the size restrictions and type restrictions
+     * Returns true if valid, returns a JsonResponse if invalid
      *
-     * @return bool|\Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @return UploadedFile|JsonResponse
      */
-    public function delete(Request $request, $fileEntity)
+    protected function validateFile(Request $request)
     {
-        // TODO add validation for delete request
-        if (!$fileEntity) {
-            return new JsonResponse(Response::$statusTexts[Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
+        if ($request->files->count() != 1) {
+            return new JsonResponse(self::ERROR_NO_FILE_UPLOADED, Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->getLocalFileService()->delete($fileEntity->getPath());
+        // check file restrictions
+        /** @var UploadedFile $uploadedFile */
+        $file = $request->files->getIterator()->current();
+
+        if ($this->fileSizeRestriction && $this->fileSizeRestriction < $file->getSize()) {
+            return new JsonResponse(self::ERROR_FILE_SIZE_EXCEEDED, Response::HTTP_BAD_REQUEST);
+        }
+        if (!empty($this->fileTypeRestrictions)
+            && !in_array($file->getMimeType(), $this->fileTypeRestrictions)) {
+            return new JsonResponse(self::ERROR_FILE_TYPE_NOT_ALLOWED, Response::HTTP_BAD_REQUEST);
+        }
+
+        return $file;
     }
 
     /**
