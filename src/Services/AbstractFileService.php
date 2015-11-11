@@ -28,7 +28,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
      */
     public function writeAndCreateEntity(UploadedFile $file, $path = 'files', $recordType = 'file')
     {
-        $fileName = uniqid() . $file->guessExtension();
+        $fileName = uniqid() . '.' . $file->guessExtension();
 
         $results = $this->write($file, $path, $fileName);
 
@@ -69,7 +69,7 @@ abstract class AbstractFileService implements ContainerAwareInterface
         $fs = fopen($file->getPathname(), 'r');
 
         if ($fileName === null) {
-            $fileName = uniqid() . $file->guessExtension();
+            $fileName = uniqid() . '.' . $file->guessExtension();
         }
 
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
