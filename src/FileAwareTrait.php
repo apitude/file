@@ -32,10 +32,11 @@ trait FileAwareTrait
      * Returns true if valid, returns a JsonResponse if invalid
      *
      * @param Request $request
+     * @param string  $recordType
      * @return UploadedFile
      * @throws FileException
      */
-    public function validateFileRequest(Request $request)
+    public function validateFileRequest(Request $request, $recordType)
     {
         if ($request->files->count() != 1) {
             throw new FileException('No file uploaded', Response::HTTP_BAD_REQUEST);
@@ -46,11 +47,11 @@ trait FileAwareTrait
         $file = $request->files->getIterator()->current();
 
         // Set size and file type restrictions from config
-        if (isset($this->container['config']['files'][$recordType]['maxsize'])) {
+        if (isset($this->container['config']['files']['record_types'][$recordType]['maxsize'])) {
             $this->fileSizeRestriction = $this->container['config']['files'][$recordType]['maxsize'];
         }
-        if (isset($this->container['config']['files'][$recordType]['types'])) {
-            $this->$fileTypeRestrictions = $this->container['config']['files'][$recordType]['types'];
+        if (isset($this->container['config']['files']['record_types'][$recordType]['types'])) {
+            $this->fileTypeRestrictions = $this->container['config']['files'][$recordType]['types'];
         }
 
         if ($this->fileSizeRestriction && $this->fileSizeRestriction < $file->getSize()) {

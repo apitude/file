@@ -32,13 +32,15 @@ class FileService implements ContainerAwareInterface
      */
     public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
     {
-        $path = isset($this->container['config']['files'][$recordType]['path']) ?
-            $this->container['config']['files'][$recordType]['path'] :
+        $filesConfig = $this->container['config']['files'];
+
+        $path = isset($filesConfig['record_types'][$recordType]['path']) ?
+            $filesConfig[$recordType]['path'] :
             self::DEFAULT_PATH;
 
-        $filesystem = isset($this->container['config']['files'][$recordType]['filesystem']) ?
-            $this->getFilesystem($this->container['config']['files'][$recordType]['filesystem']) :
-            $this->getFilesystem(self::DEFAULT_FILESYSTEM);
+        $filesystem = isset($filesConfig['record_types'][$recordType]['filesystem']) ?
+            $filesConfig['record_types'][$recordType]['filesystem'] :
+            self::DEFAULT_FILESYSTEM;
 
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
