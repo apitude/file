@@ -32,19 +32,7 @@ class FileService implements ContainerAwareInterface
      */
     public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
     {
-        $filesConfig = $this->container['config']['files'];
-
-        $path = isset($filesConfig['record_types'][$recordType]['path']) ?
-            $filesConfig['record_types'][$recordType]['path'] :
-            self::DEFAULT_PATH;
-
-        $filesystem = isset($filesConfig['record_types'][$recordType]['filesystem']) ?
-            $filesConfig['record_types'][$recordType]['filesystem'] :
-            self::DEFAULT_FILESYSTEM;
-
-        $settings = isset($filesConfig['record_types'][$recordType]['settings']) ?
-            $filesConfig['record_types'][$recordType]['settings'] :
-            $this->settings;
+        list($path, $filesystem, $settings) = $this->getConfigValuesForRecordType($recordType);
 
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
@@ -76,11 +64,58 @@ class FileService implements ContainerAwareInterface
     }
 
     /**
+     * @param UploadedFile $uploadedFile
+     * @param FileEntity $fileEntity
+     * @return bool
+     */
+    public function putUploadedFile(UploadedFile $uploadedFile, FileEntity $fileEntity)
+    {
+        list($path, $filesystem, $settings) = $this->getConfigValuesForRecordType($fileEntity->getRecordType());
+
+        $fullPath = $path . DIRECTORY_SEPARATOR . $fileEntity->getFileName();
+
+        $this->getFilesystem($filesystem)->putStream($fullPath, fopen($uploadedFile->getPathname(), 'r'), $settings);
+
+        $fileEntity->setContentType($uploadedFile->getMimeType())
+            ->setSize($uploadedFile->getSize());
+
+        /** @var EntityManager $em */
+        $em = $this->container['orm.em'];
+
+        $em->flush();
+
+        return $entity;
+    }
+
+    /**
      * @param string $type
      * @return Filesystem
      */
     protected function getFilesystem($type)
     {
         return $this->container['flysystems'][$type];
+    }
+
+    /**
+     * Returns a list of values from the File Config, or defaults if not found
+     *
+     * @param string $recordType
+     * @return array
+     */
+    protected function getConfigValuesForRecordType($recordType)
+    {
+        $config = $this->container['config']['files'];
+
+        return [
+            isset($config['record_types'][$recordType]['path']) ?
+                $config['record_types'][$recordType]['path'] :
+                self::DEFAULT_PATH,
+            isset($config['record_types'][$recordType]['filesystem']) ?
+                $config['record_types'][$recordType]['filesystem'] :
+                self::DEFAULT_FILESYSTEM,
+            isset($config['record_types'][$recordType]['settings']) ?
+                $config['record_types'][$recordType]['settings'] :
+                $this->settings,
+        ];
     }
 }
