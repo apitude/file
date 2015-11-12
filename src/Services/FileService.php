@@ -42,13 +42,14 @@ class FileService implements ContainerAwareInterface
             $filesConfig['record_types'][$recordType]['filesystem'] :
             self::DEFAULT_FILESYSTEM;
 
+        $settings = isset($filesConfig['record_types'][$recordType]['settings']) ?
+            $filesConfig['record_types'][$recordType]['settings'] :
+            $this->settings;
+
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
 
-        $results = $this->getFilesystem($filesystem)->writeStream(
-            $fullPath,
-            fopen($file->getPathname(), 'r'),
-            $this->settings);
+        $results = $this->getFilesystem($filesystem)->writeStream($fullPath, fopen($file->getPathname(), 'r'), $settings);
 
         // If the write was unsuccessful, throw an exception
         if ($results === false) {
