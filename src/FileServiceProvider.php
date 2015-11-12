@@ -39,7 +39,7 @@ class FileServiceProvider extends AbstractServiceProvider implements ServiceProv
 
         $config = $app['config']['files'];
 
-        if (in_array('s3', $config['filesystems'])) {
+        if (isset($config['filesystems']['s3'])) {
             $client = new S3Client([
                 'credentials' => [
                     'key' => $config['credentials']['AWS_ACCESS_KEY_ID'],
