@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class File
  * @package Apitude\File\Entities
  * @ORM\Entity()
- * @ORM\Table(name="files", indexes={@ORM\Index(name="k_url", columns={"url"})})
+ * @ORM\Table(name="files")
  *
  * @API\Entity\Expose()
  */
