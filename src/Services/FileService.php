@@ -56,6 +56,7 @@ class FileService implements ContainerAwareInterface
             ->setFilesystem($filesystem)
             ->setPath($path)
             ->setFileName($fileName)
+            ->setUrl($url)
             ->setSize($file->getSize());
 
         $em->persist($entity);
