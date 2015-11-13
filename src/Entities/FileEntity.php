@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class File
  * @package Apitude\File\Entities
  * @ORM\Entity()
- * @ORM\Table(name="files", indexes={@ORM\Index(name="k_path", columns={"path"})})
+ * @ORM\Table(name="files", indexes={@ORM\Index(name="k_url", columns={"url"})})
  *
  * @API\Entity\Expose()
  */
@@ -69,6 +69,14 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
      * @API\Property\Expose()
      */
     private $size;
+
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=1256)
+     * @API\Property\Expose
+     */
+    private $url;
 
     /**
      * @return int
@@ -183,6 +191,24 @@ class FileEntity extends AbstractEntity implements StampEntityInterface
     public function setFilesystem($filesystem)
     {
         $this->filesystem = $filesystem;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     * @return FileEntity
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
         return $this;
     }
 }

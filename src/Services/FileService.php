@@ -16,6 +16,7 @@ class FileService implements ContainerAwareInterface
     const DEFAULT_RECORDTYPE = 'file';
     const DEFAULT_FILESYSTEM = 'local__DIR__';
     const DEFAULT_PATH       = 'files';
+    const DEFAULT_URL        = '/';
 
     /**
      * @var array
@@ -32,7 +33,7 @@ class FileService implements ContainerAwareInterface
      */
     public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
     {
-        list($path, $filesystem, $settings) = $this->getConfigValuesForRecordType($recordType);
+        list($path, $filesystem, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
 
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
@@ -84,7 +85,7 @@ class FileService implements ContainerAwareInterface
 
         $em->flush();
 
-        return $entity;
+        return $fileEntity;
     }
 
     /**
@@ -116,6 +117,9 @@ class FileService implements ContainerAwareInterface
             isset($config['record_types'][$recordType]['settings']) ?
                 $config['record_types'][$recordType]['settings'] :
                 $this->settings,
+            isset($config['record_types'][$recordType]) ?
+                $config['record_types'][$recordType] :
+                self::DEFAULT_URL,
         ];
     }
 }
