@@ -37,6 +37,7 @@ class FileService implements ContainerAwareInterface
 
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
+        $url      = $url . DIRECTORY_SEPARATOR .  $path . DIRECTORY_SEPARATOR . $fileName;
 
         $results = $this->getFilesystem($filesystem)->writeStream($fullPath, fopen($file->getPathname(), 'r'), $settings);
 
@@ -108,18 +109,20 @@ class FileService implements ContainerAwareInterface
     {
         $config = $this->container['config']['files'];
 
+        $filesystem = isset($config['record_types'][$recordType]['filesystem']) ?
+            $config['record_types'][$recordType]['filesystem'] :
+            self::DEFAULT_FILESYSTEM;
+
         return [
             isset($config['record_types'][$recordType]['path']) ?
                 $config['record_types'][$recordType]['path'] :
                 self::DEFAULT_PATH,
-            isset($config['record_types'][$recordType]['filesystem']) ?
-                $config['record_types'][$recordType]['filesystem'] :
-                self::DEFAULT_FILESYSTEM,
+            $filesystem,
             isset($config['record_types'][$recordType]['settings']) ?
                 $config['record_types'][$recordType]['settings'] :
                 $this->settings,
-            isset($config['record_types'][$recordType]) ?
-                $config['record_types'][$recordType] :
+            isset($config['filesystems'][$filesystem]) ?
+                $config['filesystems'][$filesystem] :
                 self::DEFAULT_URL,
         ];
     }
