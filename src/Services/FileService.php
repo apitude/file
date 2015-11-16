@@ -66,6 +66,11 @@ class FileService implements ContainerAwareInterface
         return $entity;
     }
 
+
+4ac2c0d3-89a5-11e5-a24a-0800279114ca
+https://s3-us-west-2.amazonaws.com/ugogo-dev/logos/56453bff1dd18.jpeg
+47
+
     /**
      * @param UploadedFile $uploadedFile
      * @param FileEntity $fileEntity
@@ -91,16 +96,24 @@ class FileService implements ContainerAwareInterface
     }
 
     /**
-     * Deletes a FileEntity from the
+     * Deletes a file from the filesystem and then deletes the FileEntity
      * @param FileEntity $fileEntity
      * @return FileEntity
+     * @throws FileException
      */
     public function deleteFile(FileEntity $fileEntity)
     {
         list($path, $filesystem) = $this->getConfigValuesForRecordType($fileEntity->getRecordType());
 
-        if (!$this->getFilesystem($filesystem)->delete($path)) {
-            throw new FileException('Unable to delete file.');
+        /** @var Filesystem $fileSystem */
+        $filesystem = $this->getFilesystem($filesystem);
+
+        if ($filesystem->has($path . DIRECTORY_SEPARATOR . $fileEntity->getFileName())) {
+            $results = $filesystem->delete($path . DIRECTORY_SEPARATOR . $fileEntity->getFileName());
+
+            if (!$results) {
+                throw new FileException('Unable to delete file');
+            }
         }
 
         /** @var EntityManager $em */
