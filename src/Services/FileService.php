@@ -91,6 +91,29 @@ class FileService implements ContainerAwareInterface
     }
 
     /**
+     * Deletes a FileEntity from the
+     * @param FileEntity $fileEntity
+     * @return FileEntity
+     */
+    public function deleteFile(FileEntity $fileEntity)
+    {
+        list($path, $filesystem) = $this->getConfigValuesForRecordType($fileEntity->getRecordType());
+
+        if (!$this->getFilesystem($filesystem)->delete($path)) {
+            throw new FileException('Unable to delete file.');
+        }
+
+        /** @var EntityManager $em */
+        $em = $this->container['orm.em'];
+
+        $em->remove($fileEntity);
+
+        $em->flush();
+
+        return $fileEntity;
+    }
+
+    /**
      * @param string $type
      * @return Filesystem
      */
