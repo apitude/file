@@ -66,11 +66,6 @@ class FileService implements ContainerAwareInterface
         return $entity;
     }
 
-
-4ac2c0d3-89a5-11e5-a24a-0800279114ca
-https://s3-us-west-2.amazonaws.com/ugogo-dev/logos/56453bff1dd18.jpeg
-47
-
     /**
      * @param UploadedFile $uploadedFile
      * @param FileEntity $fileEntity
