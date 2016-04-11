@@ -24,10 +24,10 @@ class FileService implements ContainerAwareInterface
     protected $settings = [];
 
     /**
-     * Writes to the filesystem and creates a FileEntity
+     * Writes an UploadedFile to the filesystem and returns a FileEntity
      *
      * @param UploadedFile $file
-     * @param string $recordType
+     * @param string       $recordType
      * @return FileEntity
      * @throws FileException
      */
@@ -37,7 +37,7 @@ class FileService implements ContainerAwareInterface
 
         $fileName = uniqid() . '.' . $file->guessExtension();
         $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
-        $url      = $url . DIRECTORY_SEPARATOR .  $path . DIRECTORY_SEPARATOR . $fileName;
+        $url      = $url . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
 
         $results = $this->getFilesystem($filesystem)->writeStream($fullPath, fopen($file->getPathname(), 'r'), $settings);
 
@@ -46,29 +46,40 @@ class FileService implements ContainerAwareInterface
             throw new FileException('Unable to create file.');
         }
 
-        /** @var EntityManager $em */
-        $em = $this->container['orm.em'];
+        return $this->createFileEntity($fileName, $recordType, $file->getMimeType(), $filesystem, $path, $url, $file->getSize());
+    }
 
-        $entity = new FileEntity();
+    /**
+     * Writes string to the filesystem and returns a FileEntity
+     *
+     * @param string $contents
+     * @param string $fileName
+     * @param string $recordType
+     * @return FileEntity
+     */
+    public function writeFileAndCreateEntity($contents, $fileName, $recordType = self::DEFAULT_RECORDTYPE)
+    {
+        list($path, $filesystem, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
 
-        $entity->setFileName($fileName)
-            ->setRecordType($recordType)
-            ->setContentType($file->getMimeType())
-            ->setFilesystem($filesystem)
-            ->setPath($path)
-            ->setFileName($fileName)
-            ->setUrl($url)
-            ->setSize($file->getSize());
+        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
+        $url      = $url . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
 
-        $em->persist($entity);
-        $em->flush();
+        $results = $this->getFilesystem($filesystem)->write($fullPath, $contents, $settings);
 
-        return $entity;
+        // If the write was unsuccessful, throw an exception
+        if ($results === false) {
+            throw new FileException('Unable to create file.');
+        }
+
+        $mimeType = $this->getFilesystem($filesystem)->getMimetype($fullPath);
+        $size     = strlen($contents);
+
+        return $this->createFileEntity($fileName, $recordType, $mimeType, $filesystem, $path, $url, $size);
     }
 
     /**
      * @param UploadedFile $uploadedFile
-     * @param FileEntity $fileEntity
+     * @param FileEntity   $fileEntity
      * @return bool
      */
     public function putUploadedFile(UploadedFile $uploadedFile, FileEntity $fileEntity)
@@ -156,5 +167,38 @@ class FileService implements ContainerAwareInterface
                 $config['filesystems'][$filesystem] :
                 self::DEFAULT_URL,
         ];
+    }
+
+    /**
+     * Creates and returns a FileEntity
+     *
+     * @param $fileName
+     * @param $recordType
+     * @param $contentType
+     * @param $filesystem
+     * @param $path
+     * @param $url
+     * @param $size
+     * @return FileEntity
+     */
+    protected function createFileEntity($fileName, $recordType, $contentType, $filesystem, $path, $url, $size)
+    {
+        /** @var EntityManager $em */
+        $em = $this->container['orm.em'];
+
+        $entity = new FileEntity();
+
+        $entity->setFileName($fileName)
+            ->setRecordType($recordType)
+            ->setContentType($contentType)
+            ->setFilesystem($filesystem)
+            ->setPath($path)
+            ->setUrl($url)
+            ->setSize($size);
+
+        $em->persist($entity);
+        $em->flush();
+
+        return $entity;
     }
 }
