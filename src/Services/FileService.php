@@ -50,32 +50,36 @@ class FileService implements ContainerAwareInterface
     }
 
     /**
-     * Writes string to the filesystem and returns a FileEntity
+     * Puts string to the filesystem and optionally returns a FileEntity
      *
      * @param string $contents
      * @param string $fileName
      * @param string $recordType
      * @param string $subPath
-     * @return FileEntity
+     * @param bool   $createEntity
+     * @return FileEntity|null
      */
-    public function writeFileAndCreateEntity($contents, $fileName, $recordType = self::DEFAULT_RECORDTYPE, $subPath = DIRECTORY_SEPARATOR)
+    public function putFile($contents, $fileName, $recordType = self::DEFAULT_RECORDTYPE, $subPath = DIRECTORY_SEPARATOR, $createEntity = true)
     {
-        list($path, $filesystem, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
+        list($path, $type, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
 
-        $fullPath = $path . $subPath . $fileName;
-        $url      = $url . DIRECTORY_SEPARATOR . $path . $subPath . $fileName;
+        $fullPath   = $path . $subPath . $fileName;
+        $url        = $url . DIRECTORY_SEPARATOR . $path . $subPath . $fileName;
+        $filesystem = $this->getFilesystem($type);
 
-        $results = $this->getFilesystem($filesystem)->write($fullPath, $contents, $settings);
+        $results = $filesystem->put($fullPath, $contents, $settings);
 
         // If the write was unsuccessful, throw an exception
         if ($results === false) {
             throw new FileException('Unable to create file.');
         }
 
-        $mimeType = $this->getFilesystem($filesystem)->getMimetype($fullPath);
+        $mimeType = $filesystem->getMimetype($fullPath);
         $size     = strlen($contents);
 
-        return $this->createFileEntity($fileName, $recordType, $mimeType, $filesystem, $path, $url, $size);
+        if ($createEntity) {
+            return $this->createFileEntity($fileName, $recordType, $mimeType, $type, $path, $url, $size);
+        }
     }
 
     /**
