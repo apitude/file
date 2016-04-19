@@ -28,16 +28,16 @@ class FileService implements ContainerAwareInterface
      *
      * @param UploadedFile $file
      * @param string       $recordType
+     * @param string       $subPath
      * @return FileEntity
-     * @throws FileException
      */
-    public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE)
+    public function writeUploadedFileAndCreateEntity(UploadedFile $file, $recordType = self::DEFAULT_RECORDTYPE, $subPath = DIRECTORY_SEPARATOR)
     {
         list($path, $filesystem, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
 
         $fileName = uniqid() . '.' . $file->guessExtension();
-        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
-        $url      = $url . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
+        $fullPath = $path . $subPath . $fileName;
+        $url      = $url . DIRECTORY_SEPARATOR . $path . $subPath . $fileName;
 
         $results = $this->getFilesystem($filesystem)->writeStream($fullPath, fopen($file->getPathname(), 'r'), $settings);
 
@@ -55,14 +55,15 @@ class FileService implements ContainerAwareInterface
      * @param string $contents
      * @param string $fileName
      * @param string $recordType
+     * @param string $subPath
      * @return FileEntity
      */
-    public function writeFileAndCreateEntity($contents, $fileName, $recordType = self::DEFAULT_RECORDTYPE)
+    public function writeFileAndCreateEntity($contents, $fileName, $recordType = self::DEFAULT_RECORDTYPE, $subPath = DIRECTORY_SEPARATOR)
     {
         list($path, $filesystem, $settings, $url) = $this->getConfigValuesForRecordType($recordType);
 
-        $fullPath = $path . DIRECTORY_SEPARATOR . $fileName;
-        $url      = $url . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
+        $fullPath = $path . $subPath . $fileName;
+        $url      = $url . DIRECTORY_SEPARATOR . $path . $subPath . $fileName;
 
         $results = $this->getFilesystem($filesystem)->write($fullPath, $contents, $settings);
 
